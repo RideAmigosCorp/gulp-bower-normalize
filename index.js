@@ -24,7 +24,9 @@ function getComponents(file) {
 function gulpBowerNormalize(userOptions) {
     var options = userOptions || {},
         bowerJson = options.bowerJson || "./bower.json",
-        overrides = {};
+        overrides = {},
+        renameFn = options.renameFn,
+        filename;
 
     bowerJson = Path.join(process.cwd(), bowerJson);
 
@@ -76,10 +78,12 @@ function gulpBowerNormalize(userOptions) {
             }
         }
 
+        filename = renameFn ? renameFn(components) : components.filename;
+
         if (options.flatten) {
-            file.path = Path.join(file.cwd, file.base, type, components.filename);
+            file.path = Path.join(file.cwd, file.base, type, filename);
         } else {
-            file.path = Path.join(file.cwd, file.base, components.packageName, type, components.filename);
+            file.path = Path.join(file.cwd, file.base, components.packageName, type, filename);
         }
 
         this.push(file);
