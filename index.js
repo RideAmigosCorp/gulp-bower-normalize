@@ -3,6 +3,7 @@
 var through = require('through2');
 var gutil = require('gulp-util');
 var minimatch = require('minimatch');
+var _ = require('lodash');
 var Path = require('path');
 var PluginError = gutil.PluginError;
 
@@ -78,12 +79,14 @@ function gulpBowerNormalize(userOptions) {
             }
         }
 
-        filename = renameFn ? renameFn(components) : components.filename;
+        var supply = _.defaults(_.defaults({},file),components);
 
-        if (options.flatten) {
-            file.path = Path.join(file.cwd, file.base, type, filename);
+        if (options.renameFn) {
+            file.path = Path.resolve(renameFn(supply));
+        } else if (options.flatten) {
+            file.path = Path.join(file.cwd, file.base, type, components.filename);
         } else {
-            file.path = Path.join(file.cwd, file.base, components.packageName, type, filename);
+            file.path = Path.join(file.cwd, file.base, components.packageName, type, components.filename);
         }
 
         this.push(file);
